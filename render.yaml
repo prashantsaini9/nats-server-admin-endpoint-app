@@ -1,20 +1,13 @@
 # ═══════════════════════════════════════════════════════════
 # D-Secure NATS Server — Render Blueprint
 # ═══════════════════════════════════════════════════════════
-# 
-# Deploy: Push this repo to Render → New Blueprint Instance
-# The NATS server will be available at:
-#   wss://<service-name>.onrender.com
-#
-# Both Admin and Endpoint apps connect via WebSocket.
-# ═══════════════════════════════════════════════════════════
 
 services:
   - type: web
     name: dsecure-nats
     runtime: docker
-    dockerfilePath: ./nats_service/Dockerfile
-    dockerContext: ./nats_service
+    dockerfilePath: Dockerfile
+    dockerContext: .
     
     # Health check (monitoring endpoint)
     healthCheckPath: /healthz
@@ -31,7 +24,7 @@ services:
       mountPath: /data/jetstream
       sizeGB: 1
     
-    # Single instance (scale later if needed)
+    # Single instance
     numInstances: 1
     
     # Plan
@@ -42,8 +35,3 @@ services:
     
     # Auto-deploy on push
     autoDeploy: true
-    
-    # Only rebuild when nats_service changes
-    buildFilter:
-      paths:
-        - nats_service/**
