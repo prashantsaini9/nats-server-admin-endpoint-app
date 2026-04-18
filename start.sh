@@ -32,6 +32,9 @@ echo "Starting NATS server (Internal Port: 4223)..."
 # Start NATS in background
 nats-server -c /tmp/nats-runtime.conf &
 
+# Wait for NATS to initialize
+sleep 2
+
 echo "Starting Keep-Alive Gateway (Public Port: $NATS_WS_PORT)..."
 # Start Node.js gateway in foreground to keep container alive
 cd /app/gateway

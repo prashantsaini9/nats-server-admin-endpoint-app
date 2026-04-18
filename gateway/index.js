@@ -4,8 +4,9 @@ const http = require('http');
 
 const app = express();
 const proxy = httpProxy.createProxyServer({
-    target: 'http://localhost:4223',
-    ws: true
+    target: 'http://127.0.0.1:4223',
+    ws: true,
+    changeOrigin: true
 });
 
 const PORT = process.env.PORT || 10000;
@@ -34,10 +35,10 @@ app.get('/', (req, res) => {
 
 // ── ERROR HANDLING ──
 proxy.on('error', (err, req, res) => {
-    console.error('[GATEWAY] Proxy Error:', err);
-    if (res && res.writeHead) {
+    console.error('[GATEWAY] ❌ Proxy Error Details:', err.code, err.message);
+    if (res && !res.headersSent && res.writeHead) {
         res.writeHead(502, { 'Content-Type': 'text/plain' });
-        res.end('Gateway Error: NATS server might be starting up...');
+        res.end('Gateway Error: Could not connect to internal NATS server.');
     }
 });
 
