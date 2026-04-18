@@ -4,11 +4,18 @@
 
 FROM nats:2.10-alpine
 
-# Install curl for healthchecks + sed for config substitution
-RUN apk add --no-cache curl sed
+# Install curl for healthchecks + nodejs for the keep-alive gateway
+RUN apk add --no-cache curl sed nodejs npm
 
 # Create required directories
-RUN mkdir -p /data/jetstream /etc/nats
+RUN mkdir -p /data/jetstream /etc/nats /app/gateway
+
+# Copy gateway code and install dependencies
+COPY gateway /app/gateway
+WORKDIR /app/gateway
+RUN npm install
+
+WORKDIR /
 
 # Copy configuration and startup script
 COPY nats-server.conf /etc/nats/nats-server.conf

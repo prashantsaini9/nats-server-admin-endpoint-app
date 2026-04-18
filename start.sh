@@ -24,14 +24,15 @@ echo "════════════════════════�
 # Create data directories
 mkdir -p /data/jetstream
 
-# Substitute placeholders in config
+# Substitute placeholders in config (only Auth Token now, as port is fixed to 4223 internally)
 cp /etc/nats/nats-server.conf /tmp/nats-runtime.conf
-sed -i "s/NATS_WS_PORT_PLACEHOLDER/$NATS_WS_PORT/g" /tmp/nats-runtime.conf
 sed -i "s/NATS_AUTH_TOKEN_PLACEHOLDER/$NATS_TOKEN/g" /tmp/nats-runtime.conf
 
-echo ""
-echo "Starting NATS server..."
-echo ""
+echo "Starting NATS server (Internal Port: 4223)..."
+# Start NATS in background
+nats-server -c /tmp/nats-runtime.conf &
 
-# Start NATS with runtime config
-exec nats-server -c /tmp/nats-runtime.conf
+echo "Starting Keep-Alive Gateway (Public Port: $NATS_WS_PORT)..."
+# Start Node.js gateway in foreground to keep container alive
+cd /app/gateway
+exec node index.js
